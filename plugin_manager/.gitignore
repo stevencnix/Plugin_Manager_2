@@ -1,0 +1,46 @@
+##PyCharm##
+.idea
+./.idea
+**/*.iml
+**/*.xml
+__pycache__
+
+##Logs##
+**/*.log 
+**/log
+ 
+##Python Files##
+**/*.pyc 
+**/*.pytest*
+
+##archive Files##
+**/*.zip
+
+##config files
+**/target_calibration
+configs/active_devices_config.toml
+
+##Misc##
+node_modules/
+
+##specific resources##
+./resources/videos/**
+
+##results##
+**/results/*
+
+##docs##
+gen_docs/build/
+
+## libs and installers ##
+installers/*
+libs/*
+programs/*
+
+## pyinstaller build and dist
+/build/
+/dist/
+
+## example data
+example_data
+/CDF.egg-info/

@@ -1,0 +1,1 @@
+from .pluginmanager import PluginManager
