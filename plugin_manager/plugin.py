@@ -8,16 +8,12 @@ class Plugin(object):
         self.__details = ConfigParser()
         self.__name = plugin_name
         self.__path = plugin_path
-        self.__ensure_details_defaults_are_backwards_compatible()
+        self.__fill_empty_fields()
 
         # variables for stuff created during the plugin lifetime
         self.plugin_object = None
-        self.error = None
 
-    def __ensure_details_defaults_are_backwards_compatible(self):
-        """
-        Internal helper function.
-        """
+    def __fill_empty_fields(self):
         if not self.details.has_option("Documentation", "Author"):
             self.author = "Unknown"
         if not self.details.has_option("Documentation", "Version"):
@@ -35,22 +31,12 @@ class Plugin(object):
 
     @details.setter
     def details(self, config_details):
-        """
-        Fill in all details by storing a ``ConfigParser`` instance.
-
-        .. warning::
-            The values for ``plugin_name`` and
-            ``plugin_path`` given a init time will superseed
-            any value found in ``cfDetails`` in section
-            'Core' for the options 'Name' and 'Module' (this
-            is mostly for backward compatibility).
-        """
-        bkp_name = self.__name
-        bkp_path = self.__path
+        name = self.__name
+        path = self.__path
         self.__details = config_details
-        self.__name = bkp_name
-        self.__path = bkp_path
-        self.__ensure_details_defaults_are_backwards_compatible()
+        self.__name = name
+        self.__path = path
+        self.__fill_empty_fields()
 
     @property
     def name(self):
@@ -77,18 +63,12 @@ class Plugin(object):
         return StrictVersion(self.details.get("Documentation", "Version"))
 
     @version.setter
-    def version(self, vstring):
-        """
-        Set the version of the plugin.
-
-        Used by subclasses to provide different handling of the
-        version number.
-        """
-        if isinstance(vstring, StrictVersion):
-            vstring = str(vstring)
+    def version(self, ver):
+        if isinstance(ver, StrictVersion):
+            ver = str(ver)
         if not self.details.has_section("Documentation"):
             self.details.add_section("Documentation")
-        self.details.set("Documentation", "Version", vstring)
+        self.details.set("Documentation", "Version", ver)
 
     @property
     def author(self):
@@ -105,10 +85,10 @@ class Plugin(object):
         return self.details.get("Documentation", "Copyright")
 
     @copyright.setter
-    def copyright(self, copyright_txt):
+    def copyright(self, copyright):
         if not self.details.has_section("Documentation"):
             self.details.add_section("Documentation")
-        self.details.set("Documentation", "Copyright", copyright_txt)
+        self.details.set("Documentation", "Copyright", copyright)
 
     @property
     def website(self):

@@ -10,19 +10,19 @@ from plugin import Plugin
 
 class PluginManager:
     """
-    A basic python plugin manager based off of https://gist.github.com/mepcotterell/6004997
-    Rewritten using ImportLib and pathlib and updated to Python 3
-    This will allow users to make plugin folders place any number of plugins in them, grab the module and then
-    using getattr initialize and object from that module
+    A basic python plugin manager based off of https://github.com/tibonihoo/yapsy
+
+    This is a simple python plugin based around yapsy's plugin info file and module file system. It is missing a lot of
+    yapsy's robustness and customizability.
     """
 
     def __init__(self, plugin_folder: str, plugin_info_ext="info", log=logging):
         """
         This is the initialization method. User must set the plugin folder location. They can also set their own logging
-        should they have their own. Finally they can also set the max number of lodable plugins if they want.
+        should they have their own.
         :param plugin_folder: Base dir for plugins.
+        :param plugin_info_ext: Allows user to define custom extension for there plugin info files.
         :param log: Python logging.
-        :param max_loaded_plugins: The max number of loadable plugins.
         """
         self.__logging = log
         self.__plugin_folders = pathlib.Path(plugin_folder)
@@ -36,6 +36,9 @@ class PluginManager:
             sys.path.append(path.as_posix())
 
     def import_plugins(self):
+        """
+        Imports all plugins in user defined plugin directories.
+        """
         for plugin_info_path in pathlib.Path(self.__plugin_folders).glob(f"**/*.{self.__plugin_config_ext}"):
             config_parser = ConfigParser()
             config_parser.read(plugin_info_path)
@@ -64,6 +67,12 @@ class PluginManager:
                 self.__logging.warning(f"Missing Module for Plugin: {plugin_info_path.absolute().as_posix()}")
 
     def get_active_plugin(self, plugin_name: str):
+        """
+        Retrieves a plugin from the active plugins.
+        :param plugin_name: User defined name of plugin from plugin info file
+
+        return: Plugin
+        """
         return self.__imported_plugins.get(plugin_name)
 
     def remove_plugin(self, plugin_name):
