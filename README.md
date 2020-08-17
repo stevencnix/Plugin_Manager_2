@@ -31,4 +31,4 @@ ready to go hands of plugin manager.
 
     ```shell
     plugins = plugin_manager.active_plugins
-    ``` # Plugin_Manager_2
+    ```
