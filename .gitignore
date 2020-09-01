@@ -105,6 +105,7 @@ programs/*
 ## pyinstaller build and dist
 /build/
 /dist/
+**/*.egg-info
 
 ## example data
 example_data

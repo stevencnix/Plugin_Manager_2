@@ -5,7 +5,7 @@ import pathlib
 import sys
 import inspect
 from configparser import ConfigParser
-from plugin import Plugin
+from .plugin import Plugin
 
 
 class PluginManager:
@@ -28,6 +28,7 @@ class PluginManager:
         self.__plugin_folders = pathlib.Path(plugin_folder)
         self.__plugin_config_ext = plugin_info_ext
         self.__imported_plugins = dict()
+        self.__categorized_plugins = dict()
 
         # !!!IMPORTANT: This line insures that the plugin directory gets added to the path so that it can be seen.
         # if not included the plugins folder may not be detected.
@@ -58,6 +59,8 @@ class PluginManager:
 
                             if plugin:
                                 self.__imported_plugins[plugin.name] = plugin
+                                self.__categorize_plugin(plugin)
+
                                 self.__logging.info(f"{plugin.name} imported successfully.")
                     else:
                         self.__logging.warning(f"Missing Module for Plugin: {plugin_info_path.absolute().as_posix()}")
@@ -65,6 +68,14 @@ class PluginManager:
                     raise ValueError("Plugin Config file is missing necessary parameters.")
             except ModuleNotFoundError as me:
                 self.__logging.warning(f"Missing Module for Plugin: {plugin_info_path.absolute().as_posix()}")
+
+    def __categorize_plugin(self, plugin):
+        plugin_type = type(plugin.plugin_object).__base__.__name__
+        if plugin_type not in self.__categorized_plugins:
+            self.__categorized_plugins[plugin_type] = {plugin.name: plugin}
+        else:
+            plugins_store = self.__categorized_plugins.get(plugin_type)
+            plugins_store[plugin.name] = plugin
 
     def get_active_plugin(self, plugin_name: str):
         """
@@ -87,3 +98,7 @@ class PluginManager:
     @property
     def active_plugins(self):
         return self.__imported_plugins
+
+    @property
+    def categorized_plugins(self):
+        return self.__categorized_plugins
