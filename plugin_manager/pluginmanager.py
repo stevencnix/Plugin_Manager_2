@@ -34,7 +34,7 @@ class PluginManager:
         # if not included the plugins folder may not be detected.
         paths = [self.__plugin_folders]+[f for f in self.__plugin_folders.iterdir() if f.is_dir()]
         for path in paths:
-            sys.path.append(path.as_posix())
+            sys.path.append(path.absolute().as_posix())
 
     def import_plugins(self):
         """
@@ -46,7 +46,8 @@ class PluginManager:
             try:
                 if config_parser.get("Core", "Module"):
                     module_name = config_parser.get("Core", "Module")
-                    module = importlib.import_module(module_name)
+                    module_parent = plugin_info_path.parent.name
+                    module = importlib.import_module(f".{module_name}", f"{module_parent}")
                     if module:
                         if config_parser.get("Core", "Name"):
                             plugin = Plugin(config_parser.get("Core", "Name"),
